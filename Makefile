@@ -1,6 +1,11 @@
-all: signaltest
+.PHONY: clean kill interrupt hangup
 
-signaltest: signaltest.o
+PROG=signaltest
+PROG_PID=$$(ps | grep $(PROG) | grep -v grep | awk '{print $1}' )
+
+all: $(PROG)
+
+$(PROG): $(PROG).o
 	$(CC) -o $@ -lpthread $<
 	chmod +x $@
 
@@ -8,4 +13,13 @@ signaltest: signaltest.o
 	$(CC) -o $@ -c $<
 
 clean:
-	rm -f signaltest signaltest.o
+	rm -f $(PROG) $(PROG).o
+
+kill:
+	kill -KILL $(PROG_PID)
+
+interrupt:
+	kill -INT $(PROG_PID)
+
+hangup:
+	kill -HUP $(PROG_PID)
