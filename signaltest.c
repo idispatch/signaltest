@@ -36,6 +36,7 @@ static int wait_signals(const int signals[], size_t length){
 // dummy signal handler
 static void signal_handler(int signo, siginfo_t *info, void *context) {
     char message[200];
+    // no floating point in snpritnf format string - so it is safe to call
     snprintf(message, sizeof(message), "signal_handler: received signal=%d (thread=%d)\n", signo, (int)pthread_self());
     write(1, message, strlen(message));
 }
@@ -65,7 +66,7 @@ static int setup_signals() {
     sa.sa_handler = NULL;
     sa.sa_sigaction = signal_handler;
 
-    const int signals[] = {SIGQUIT, SIGTERM, SIGHUP, SIGINT, SIGUSR1};
+    const int signals[] = {SIGQUIT, SIGTERM, SIGHUP, SIGINT, SIGPIPE, SIGUSR1};
     size_t length = sizeof(signals)/sizeof(signals[0]);
     for(;length > 0; length--) {
         rc = sigaction(signals[length - 1], &sa, NULL);
